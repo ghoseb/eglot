@@ -1,0 +1,34 @@
+From d34fc7b7aa9d2779ebbada5cecd8bd2806e3e01e Mon Sep 17 00:00:00 2001
+From: dannyfreeman <danny@dfreeman.email>
+Date: Thu, 24 Nov 2022 15:22:33 +0000
+Subject: [PATCH] Eglot: don't confuse URLs and windows file paths
+
+bug#59338
+
+* lisp/progmodes/eglot.el (eglot--path-to-uri): Check for windows path
+---
+ lisp/progmodes/eglot.el | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/eglot.el b/eglot.el
+index d05b5ee3356..5f13679b1ea 100644
+--- a/eglot.el
++++ b/eglot.el
+@@ -1503,11 +1503,15 @@ If optional MARKER, return a marker instead"
+ (defun eglot--path-to-uri (path)
+   "URIfy PATH."
+   (let ((truepath (file-truename path)))
+-    (if (url-type (url-generic-parse-url truepath))
++    (if (and (url-type (url-generic-parse-url path))
++             ;; It might be MS Windows path which includes a drive
++             ;; letter that looks like a URL scheme (bug#59338)
++             (not (and (eq system-type 'windows-nt)
++                       (file-name-absolute-p truepath))))
+         ;; Path is already a URI, so forward it to the LSP server
+         ;; untouched.  The server should be able to handle it, since
+         ;; it provided this URI to clients in the first place.
+-        truepath
++        path
+       (concat "file://"
+               ;; Add a leading "/" for local MS Windows-style paths.
+               (if (and (eq system-type 'windows-nt)

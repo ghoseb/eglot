@@ -1,0 +1,25 @@
+From d764a2bfa88c4b33a290acd088ef4a4315d8902d Mon Sep 17 00:00:00 2001
+From: Eli Zaretskii <eliz@gnu.org>
+Date: Fri, 11 Nov 2022 10:21:45 +0200
+Subject: [PATCH] ; * lisp/progmodes/eglot.el (eglot--path-to-uri): Improve
+ commentary.
+
+---
+ lisp/progmodes/eglot.el | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/eglot.el b/eglot.el
+index 2463f68f9711..23f6d8e76d43 100644
+--- a/eglot.el
++++ b/eglot.el
+@@ -1502,7 +1502,9 @@ If optional MARKER, return a marker instead"
+   "URIfy PATH."
+   (let ((truepath (file-truename path)))
+     (if (url-type (url-generic-parse-url truepath))
+-        ;; Path is already a URI, so forward it to the lsp server untouched.
++        ;; Path is already a URI, so forward it to the LSP server
++        ;; untouched.  The server shopuld be able to handle it, since
++        ;; it provided this URI to clients in the first place.
+         truepath
+       (concat "file://"
+               ;; Add a leading "/" for local MS Windows-style paths.
