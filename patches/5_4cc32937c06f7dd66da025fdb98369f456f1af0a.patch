@@ -1,0 +1,23 @@
+From 4cc32937c06f7dd66da025fdb98369f456f1af0a Mon Sep 17 00:00:00 2001
+From: Stephen Leake <stephen_leake@stephe-leake.org>
+Date: Mon, 31 Oct 2022 17:30:02 -0700
+Subject: [PATCH] Fix eglot-shutdown-all: Match current eglot-shutdown
+ signature
+
+---
+ lisp/progmodes/eglot.el | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lisp/progmodes/eglot.el b/lisp/progmodes/eglot.el
+index c58706183724..0a0d73eb6d2e 100644
+--- a/eglot.el
++++ b/eglot.el
+@@ -877,7 +877,7 @@ SERVER."
+ PRESERVE-BUFFERS as in `eglot-shutdown', which see."
+   (interactive (list current-prefix-arg))
+   (cl-loop for ss being the hash-values of eglot--servers-by-project
+-           do (cl-loop for s in ss do (eglot-shutdown s nil preserve-buffers))))
++           do (cl-loop for s in ss do (eglot-shutdown s nil nil preserve-buffers))))
+ 
+ (defun eglot--on-shutdown (server)
+   "Called by jsonrpc.el when SERVER is already dead."

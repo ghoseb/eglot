@@ -1,0 +1,30 @@
+From c833b291f57e61613cbf09cffae478aa02e6ecc5 Mon Sep 17 00:00:00 2001
+From: Evgeni Kolev <evgenysw@gmail.com>
+Date: Thu, 10 Nov 2022 17:17:44 +0000
+Subject: [PATCH] Ignore errors when shutting down all LSP servers (bug#59146)
+
+eglot-shutdown-all has a bug that results in partially stopping
+servers: when a server shutdown timeouts (1.5s), an error is
+propagated and eglot-shutdown-all does not try to shutdown the rest of
+the servers.
+
+* eglot.el (eglot-shutdown-all): Ignore errors when shutting down
+  servers, converting errors to messages.
+---
+ lisp/progmodes/eglot.el | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lisp/progmodes/eglot.el b/lisp/progmodes/eglot.el
+index f69d392b4633..7fa4bd380ca5 100644
+--- a/eglot.el
++++ b/eglot.el
+@@ -877,7 +877,8 @@ SERVER."
+ PRESERVE-BUFFERS as in `eglot-shutdown', which see."
+   (interactive (list current-prefix-arg))
+   (cl-loop for ss being the hash-values of eglot--servers-by-project
+-           do (cl-loop for s in ss do (eglot-shutdown s nil nil preserve-buffers))))
++           do (with-demoted-errors "[eglot] shutdown all: %s"
++                (cl-loop for s in ss do (eglot-shutdown s nil nil preserve-buffers)))))
+ 
+ (defun eglot--on-shutdown (server)
+   "Called by jsonrpc.el when SERVER is already dead."
